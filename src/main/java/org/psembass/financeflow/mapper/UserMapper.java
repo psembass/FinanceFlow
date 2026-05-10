@@ -13,8 +13,12 @@ public class UserMapper {
 
     public User toEntity(UserRequest userRequest) {
         User user = new User();
+        updateEntity(user, userRequest);
+        return user;
+    }
+
+    public void updateEntity(User user, UserRequest userRequest) {
         user.setName(userRequest.getName());
         user.setEmail(userRequest.getEmail());
-        return user;
     }
 }

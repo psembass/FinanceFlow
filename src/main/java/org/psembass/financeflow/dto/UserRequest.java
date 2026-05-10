@@ -9,4 +9,8 @@ public class UserRequest {
     private String name;
     @NotBlank
     private String email;
+
+    public void setEmail(String email) {
+        this.email = email != null ? email.trim().toLowerCase() : null;
+    }
 }
