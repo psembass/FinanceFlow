@@ -2,6 +2,7 @@ package org.psembass.financeflow.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.psembass.financeflow.dto.SummaryResponse;
 import org.psembass.financeflow.dto.TransactionRequest;
 import org.psembass.financeflow.dto.TransactionResponse;
 import org.psembass.financeflow.enums.CategoryType;
@@ -37,5 +38,11 @@ public class TransactionController {
                                                                      @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
         return ResponseEntity.ok(service.getTransactions(userId, type, categoryId, from, to, pageable));
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<SummaryResponse> getSummary(@PathVariable Long userId, @RequestParam LocalDate from,
+                                                      @RequestParam LocalDate to) {
+        return ResponseEntity.ok(service.getSummary(userId, from, to));
     }
 }

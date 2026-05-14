@@ -2,6 +2,8 @@ package org.psembass.financeflow.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.psembass.financeflow.dto.CategorySummary;
+import org.psembass.financeflow.dto.SummaryResponse;
 import org.psembass.financeflow.dto.TransactionRequest;
 import org.psembass.financeflow.dto.TransactionResponse;
 import org.psembass.financeflow.entity.Category;
@@ -19,7 +21,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -59,5 +63,22 @@ public class TransactionService {
             specification = specification.and(TransactionSpecification.toDate(to));
         }
         return repo.findAll(specification, pageable).map(mapper::toResponse);
+    }
+
+    public SummaryResponse getSummary(Long userId, LocalDate from, LocalDate to) {
+        usersRepo.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("From must be before to date");
+        }
+        List<CategorySummary> categorySummary = repo.findCategorySummary(userId, from, to);
+        BigDecimal totalIncome = categorySummary.stream()
+                .filter(c -> c.getType() == CategoryType.INCOME)
+                .map(CategorySummary::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalExpenses = categorySummary.stream()
+                .filter(c -> c.getType() == CategoryType.EXPENSE)
+                .map(CategorySummary::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return new SummaryResponse(from, to, totalIncome, totalExpenses, totalIncome.subtract(totalExpenses), categorySummary);
     }
 }
