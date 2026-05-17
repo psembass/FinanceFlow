@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<TransactionResponse> createTransaction(@PathVariable Long userId,
                                                                  @Valid @RequestBody TransactionRequest transaction) {
-        return ResponseEntity.ok(service.createTransaction(userId, transaction));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createTransaction(userId, transaction));
     }
 
     @GetMapping
