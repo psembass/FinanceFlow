@@ -1,0 +1,67 @@
+stages:
+  - build
+  - test
+  - package
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .gradle/
+
+build:
+  stage: build
+  image: eclipse-temurin:21-jdk-alpine
+  script:
+    - ./gradlew compileJava
+  only:
+    - master
+    - merge_requests
+
+test:
+  stage: test
+  image: eclipse-temurin:21-jdk-alpine
+  services:
+    - name: postgres:15-alpine
+      alias: postgres
+  variables:
+    POSTGRES_DB: financeflow_test
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    DB_URL: jdbc:postgresql://postgres:5432/financeflow_test
+    DB_USERNAME: postgres
+    DB_PASSWORD: postgres
+    SPRING_JPA_HIBERNATE_DDL_AUTO: none
+  script:
+    - ./gradlew test
+  before_script:
+    - apk add --no-cache postgresql-client
+    - |
+      until pg_isready -h postgres -U postgres; do
+        echo "Waiting for postgres..."
+        sleep 2
+      done
+  artifacts:
+    when: always
+    reports:
+      junit: build/test-results/test/*.xml
+    paths:
+      - build/reports/tests/
+    expire_in: 1 week
+  only:
+    - master
+    - merge_requests
+
+package:
+  stage: package
+  image: eclipse-temurin:21-jdk-alpine
+  script:
+    - ./gradlew bootJar
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 week
+  only:
+    - master
