@@ -2,8 +2,10 @@ package org.psembass.financeflow.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class UserRequest {
     @NotBlank
     private String name;
