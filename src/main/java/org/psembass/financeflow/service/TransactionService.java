@@ -15,6 +15,8 @@ import org.psembass.financeflow.repo.CategoryRepo;
 import org.psembass.financeflow.repo.TransactionRepo;
 import org.psembass.financeflow.repo.UsersRepo;
 import org.psembass.financeflow.specification.TransactionSpecification;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,6 +36,7 @@ public class TransactionService {
     private final CategoryRepo categoryRepo;
     private final TransactionMapper mapper;
 
+    @CacheEvict(value = "summaries", key = "#userId")
     @Transactional
     public TransactionResponse createTransaction(Long userId,
                                                  TransactionRequest request) {
@@ -65,6 +68,7 @@ public class TransactionService {
         return repo.findAll(specification, pageable).map(mapper::toResponse);
     }
 
+    @Cacheable(value = "summaries", key = "#userId")
     public SummaryResponse getSummary(Long userId, LocalDate from, LocalDate to) {
         usersRepo.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
         if (from.isAfter(to)) {

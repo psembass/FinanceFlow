@@ -5,7 +5,7 @@ Built to showcase practical experience with modern Java backend practices rather
 
 ## Stack
 
-Java 21, Spring Boot 3.5, PostgreSQL 15, Hibernate, Flyway, Docker, Docker Compose, GitLab CI, Gradle, JUnit 5, Mockito
+Java 21, Spring Boot 3.5, PostgreSQL 15, Hibernate, Flyway, Redis, Docker, Docker Compose, GitLab CI, Gradle, JUnit 5, Mockito
 
 ## What It Does
 
@@ -22,7 +22,7 @@ REST API for tracking personal income and expenses:
 docker compose up --build
 ```
 
-Starts the application and PostgreSQL via Docker Compose. 
+Starts the application, PostgreSQL, and Redis via Docker Compose. 
 API available at `http://localhost:8080`.
 
 ## CI/CD
@@ -44,3 +44,4 @@ Four-level test coverage:
 - Dynamic transaction filtering via JPA Specifications (type, category, date range, pagination)
 - Financial summary endpoint uses JPQL aggregation with `SUM` grouped by category
 - Schema managed with Flyway versioned migrations
+- Summaries cached in Redis, one by userId

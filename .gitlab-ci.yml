@@ -26,6 +26,8 @@ test:
   services:
     - name: postgres:15-alpine
       alias: postgres
+    - name: redis:7-alpine
+      alias: redis
   variables:
     POSTGRES_DB: financeflow_test
     POSTGRES_USER: postgres
@@ -33,6 +35,8 @@ test:
     DB_URL: jdbc:postgresql://postgres:5432/financeflow_test
     DB_USERNAME: postgres
     DB_PASSWORD: postgres
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
     SPRING_JPA_HIBERNATE_DDL_AUTO: none
   script:
     - ./gradlew test
