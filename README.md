@@ -23,7 +23,7 @@ docker compose up --build
 ```
 
 Starts the application, PostgreSQL, and Redis via Docker Compose. 
-API available at `http://localhost:8080`.
+API available at `http://localhost:8080/swagger-ui.html`.
 
 ## CI/CD
 GitLab CI pipeline runs on every push to main and on merge requests:
